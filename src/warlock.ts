@@ -1,4 +1,4 @@
-
+import util from 'util';
 import Scripty from 'node-redis-scripty';
 import UUID from 'uuid';
 import { WarlockError } from './WarlockError';
@@ -11,8 +11,11 @@ export = function (redis) {
   const warlock: {
     makeKey: (key: string) => string;
     lock: (key: string, ttl: number, cb?: Callback<LockResult>) => void;
-    unlock: (key: string, id, cb?: (err?: Error | null, result?: any) => void) => void;
-    optimistic: (key: string, ttl: number, maxAttempts: number, wait: number, cb) => void;
+    lockPromise: (key: string, ttl: number) => Promise<LockResult>;
+    unlock: (key: string, id: string, cb?: Callback) => void;
+    unlockPromise: (key: string, id: string) => Promise<any>;
+    optimistic: (key: string, ttl: number, maxAttempts: number, wait: number, cb: Callback<UnlockFunction>) => void;
+    optimisticPromise: (key: string, ttl: number, maxAttempts: number, wait: number) => Promise<UnlockFunction>;
   } = {} as any;
 
   const scripty = new Scripty(redis);
@@ -53,6 +56,8 @@ export = function (redis) {
     return key;
   };
 
+  warlock.lockPromise = util.promisify(warlock.lock);
+
   warlock.unlock = function (key: string, id, cb?) {
     cb = cb || function () { };
 
@@ -70,6 +75,8 @@ export = function (redis) {
       }
     );
   };
+
+  warlock.unlockPromise = util.promisify(warlock.unlock);
 
   /**
    * Set a lock optimistically (retries until reaching maxAttempts).
@@ -101,6 +108,8 @@ export = function (redis) {
 
     tryLock();
   };
+
+  warlock.optimisticPromise = util.promisify(warlock.optimistic);  
 
   return warlock;
 };
