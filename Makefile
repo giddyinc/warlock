@@ -3,7 +3,11 @@ REPORTER ?= list
 
 run = $(RUNNER) -R $(REPORTER) $(2) $(1)
 
-test:
+clean:
+	npm run clean
+compile: clean
+	npm run build
+test: compile
 	$(call run,./test/warlock.js)
 
 bench:
