@@ -1,6 +1,10 @@
 warlock
 =======
 
+[![Travis](https://travis-ci.org/TheDeveloper/warlock.svg?branch=master)](https://travis-ci.org/TheDeveloper/warlock)
+[![Dependency Status](https://david-dm.org/thedeveloper/warlock.svg)](https://david-dm.org/thedeveloper/warlock)
+[![Join the chat at https://gitter.im/TheDeveloper/warlock](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/TheDeveloper/warlock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Battle-hardened distributed locking using redis.
 
 ## Requirements
@@ -52,6 +56,22 @@ var ttl = 10000;
 var maxAttempts = 4; // Max number of times to try setting the lock before erroring
 var wait = 1000; // Time to wait before another attempt if lock already in place
 warlock.optimistic(key, ttl, maxAttempts, wait, function(err, unlock) {});
+
+// unlock using the lock id
+var key = 'test-lock-2';
+var ttl = 10000;
+var lockId;
+
+warlock.lock(key, ttl, function(err, _, id) {
+  lockId = id;
+});
+
+// each client who knows the lockId can release the lock
+warlock.unlock(key, lockId, function(err, result) {
+  if(result == 1) {
+    // unlocked successfully
+  }
+});
 
 ```
 

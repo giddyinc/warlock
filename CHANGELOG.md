@@ -1,6 +1,14 @@
 Changelog
 ---
 
+# v0.2.0
+
+* Merge [#18](https://github.com/TheDeveloper/warlock/pull/18): Pass lock id to `.lock` callback.
+
+# v0.1.3
+
+* Allow proper use of Warlock with different redis clients.
+
 # v0.1.2
 
 * Update [`uuid`](https://www.npmjs.org/package/uuid) dependency to v2.0.1.
